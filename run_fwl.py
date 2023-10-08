@@ -15,7 +15,7 @@ from fwl import field_wise_learning_model, variance_reg
 def get_dataset(path):
     if   'criteo' in path:
         return CriteoDataset(path)
-    elif 'avazu' in path:
+    elif 'Avazu' in path:
         return AvazuDataset(path)
     else:
         raise ValueError('unknown dataset name')
@@ -54,7 +54,7 @@ def test(model, data_loader, criterion, device):
 
 
 def main(args):
-    device = torch.device(args.device)
+    device = torch.device("cpu")#args.device)
     dataset = get_dataset(args.dataset_path)
     train_length = int(len(dataset) * 0.8)
     valid_length = int(len(dataset) * 0.1)
