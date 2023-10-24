@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader, Subset
 from gen_dataset.avazu import AvazuDataset
 from gen_dataset.criteo import CriteoDataset
 from fwl import field_wise_learning_model, variance_reg
+from sklearn.datasets import fetch_20newsgroups
 
 
 def get_dataset(path):
@@ -17,6 +18,10 @@ def get_dataset(path):
         return CriteoDataset(path)
     elif 'Avazu' in path:
         return AvazuDataset(path)
+    #Added code to use KDD12 to recreate the results
+    elif 'newsgroup' in path:
+        newsgroups_data = fetch_20newsgroups(subset='all')
+        return newsgroups_data
     else:
         raise ValueError('unknown dataset name')
 
