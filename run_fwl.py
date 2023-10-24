@@ -10,7 +10,8 @@ from torch.utils.data import DataLoader, Subset
 from gen_dataset.avazu import AvazuDataset
 from gen_dataset.criteo import CriteoDataset
 from fwl import field_wise_learning_model, variance_reg
-from sklearn.datasets import fetch_20newsgroups
+from gen_dataset.adultincome import AdultIncome
+import pandas as pd
 
 
 def get_dataset(path):
@@ -18,10 +19,10 @@ def get_dataset(path):
         return CriteoDataset(path)
     elif 'Avazu' in path:
         return AvazuDataset(path)
-    #Added code to use KDD12 to recreate the results
-    elif 'newsgroup' in path:
-        newsgroups_data = fetch_20newsgroups(subset='all')
-        return newsgroups_data
+    #Added code to use adultincome dataset to recreate the results
+    elif 'AdultIncome' in path:
+        print(path)
+        return AdultIncome(path)
     else:
         raise ValueError('unknown dataset name')
 
@@ -61,6 +62,10 @@ def test(model, data_loader, criterion, device):
 def main(args):
     device = torch.device("cpu")#args.device)
     dataset = get_dataset(args.dataset_path)
+    # print(dataset.field_dims)
+    # print(dataset.length)
+
+    
     train_length = int(len(dataset) * 0.8)
     valid_length = int(len(dataset) * 0.1)
     all_index = list(range(len(dataset)))      
@@ -99,7 +104,7 @@ def main(args):
             test_auc,test_loss = test(model, test_data_loader, criterion, device) 
         else:
             break
-    return(epoch_i, test_auc, test_loss)        
+    return(epoch_i, test_auc, test_loss)     
 
 
 
@@ -127,6 +132,6 @@ if __name__ == '__main__':
     print(args)    
     
     test_results  = main(args)
-    print("epoch: {0}, best_auc: {1}, best_loss: {2}".format(test_results[0],test_results[1],test_results[2]))
+    #print("epoch: {0}, best_auc: {1}, best_loss: {2}".format(test_results[0],test_results[1],test_results[2]))
     
     
