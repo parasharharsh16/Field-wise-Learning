@@ -12,6 +12,7 @@ from gen_dataset.criteo import CriteoDataset
 from fwl import field_wise_learning_model, variance_reg
 from gen_dataset.adultincome import AdultIncome
 import pandas as pd
+from plot import plotResults
 
 
 def get_dataset(path):
@@ -60,12 +61,16 @@ def test(model, data_loader, criterion, device):
 
 
 def main(args):
+    train_acuu = []
+    train_loss = []
+    val_accu = []
+    val_loss = []
+    epochs = []
+
     device = torch.device("cpu")#args.device)
     dataset = get_dataset(args.dataset_path)
     # print(dataset.field_dims)
     # print(dataset.length)
-
-    
     train_length = int(len(dataset) * 0.8)
     valid_length = int(len(dataset) * 0.1)
     all_index = list(range(len(dataset)))      
@@ -93,18 +98,23 @@ def main(args):
     test_auc = 0
     test_loss = 1e10  
     for epoch_i in range(args.epoch):
+        epochs.append(epoch_i+1)
         train(model, optimizer, train_data_loader, criterion, device, norm_reg, args.reg_freq)
         auc,loss = test(model, train_data_loader, criterion, device)
         print("train_auc:",auc,"train_logloss:",loss)
+        train_acuu.append(auc)
+        train_loss.append(loss)
         auc,loss = test(model, valid_data_loader, criterion, device)
         print("valid_auc:",auc,"valid_logloss:",loss)
+        val_accu.append(auc)
+        val_loss.append(loss)
         if loss<best_loss:
             best_loss = loss
             best_auc = auc
             test_auc,test_loss = test(model, test_data_loader, criterion, device) 
         else:
             break
-    return(epoch_i, test_auc, test_loss)     
+    return(epoch_i, test_auc, test_loss),train_acuu,val_accu,train_loss,val_loss,epochs
 
 
 
@@ -131,7 +141,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)    
     
-    test_results  = main(args)
-    #print("epoch: {0}, best_auc: {1}, best_loss: {2}".format(test_results[0],test_results[1],test_results[2]))
-    
+    test_results,train_acuu,val_accu,train_loss,val_loss,epochs  = main(args)
+    print("epoch: {0}, best_auc: {1}, best_loss: {2}".format(test_results[0],test_results[1],test_results[2]))
+    plotResults(train_acuu,val_accu,train_loss,val_loss)
     

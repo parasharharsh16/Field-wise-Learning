@@ -1,7 +1,3 @@
-"""
-Revised from https://github.com/rixwew/pytorch-fm/blob/master/torchfm/dataset/avazu.py
-"""
-
 import shutil
 import struct
 from collections import defaultdict
@@ -17,21 +13,6 @@ import pandas as pd
 
 
 class AdultIncome(torch.utils.data.Dataset):
-    """
-    Avazu Click-Through Rate Prediction Dataset
-
-    Dataset preparation
-        Remove the infrequent features (appearing in less than threshold instances) and treat them as a single feature
-
-    :param dataset_path: avazu train path
-    :param cache_path: lmdb cache path
-    :param rebuild_cache: If True, lmdb cache is refreshed
-    :param min_threshold: infrequent feature threshold
-
-    Reference
-        https://www.kaggle.com/c/avazu-ctr-prediction
-    """
-
     def __init__(self, dataset_path=None, cache_path='.adultincome', rebuild_cache=False, min_threshold=4):
         self.NUM_FEATS = 14
         self.min_threshold = min_threshold
